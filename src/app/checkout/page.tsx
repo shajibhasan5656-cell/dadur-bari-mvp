@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { deliveryRules, paymentMethods, paymentNumber } from "@/lib/brand";
@@ -11,7 +15,85 @@ const subtotal = orderItems.reduce((total, item) => total + item.price, 0);
 const deliveryCharge = deliveryRules.insideJoypurhat.charge;
 const total = subtotal + deliveryCharge;
 
+const initialFormData = {
+  full_name: "",
+  phone: "",
+  email: "",
+  district: "",
+  area: "",
+  address: "",
+  payment_method: "",
+  transaction_id: "",
+  sender_number: "",
+  order_notes: "",
+};
+
 export default function CheckoutPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+    if (errorMessage) {
+      setErrorMessage("");
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("https://formspree.io/f/mqerqlyw", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          _subject: "New Dadur Bari Order",
+          order_items: "Premium Oversized T-Shirt + Gold Custom DTF T-Shirt",
+          order_total: "1498 BDT",
+        }),
+      });
+
+      if (response.ok) {
+        router.push("/checkout/success");
+        return;
+      }
+
+      let message = "We couldn't submit your order right now. Please try again.";
+      try {
+        const errorData = await response.json();
+        if (errorData?.error) {
+          message = errorData.error;
+        }
+      } catch {
+        // Ignore JSON parsing errors and fall back to the standard message.
+      }
+
+      setErrorMessage(message);
+    } catch {
+      setErrorMessage("We couldn't submit your order right now. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
       <Header />
@@ -26,8 +108,7 @@ export default function CheckoutPage() {
       </section>
 
       <form
-        action="https://formspree.io/f/mqerqlyw"
-        method="POST"
+        onSubmit={handleSubmit}
         className="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[1fr_380px]"
       >
         <input type="hidden" name="_subject" value="New Dadur Bari Order" />
@@ -45,12 +126,16 @@ export default function CheckoutPage() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
                 name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Full Name"
                 required
               />
               <input
                 name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Phone Number"
                 required
@@ -58,6 +143,8 @@ export default function CheckoutPage() {
               <input
                 name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3 md:col-span-2"
                 placeholder="Email Optional"
               />
@@ -70,18 +157,24 @@ export default function CheckoutPage() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
                 name="district"
+                value={formData.district}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="District"
                 required
               />
               <input
                 name="area"
+                value={formData.area}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Area"
                 required
               />
               <textarea
                 name="address"
+                value={formData.address}
+                onChange={handleChange}
                 className="min-h-28 rounded-md border border-black/10 px-4 py-3 md:col-span-2"
                 placeholder="Full Address"
                 required
@@ -92,7 +185,9 @@ export default function CheckoutPage() {
               <p>{`Inside Joypurhat Delivery Charge: ৳${deliveryRules.insideJoypurhat.charge}`}</p>
               <p>{`Outside Joypurhat Delivery Charge: ৳${deliveryRules.outsideJoypurhat.charge}`}</p>
               <p>{`Delivery Time: ${deliveryRules.insideJoypurhat.days} / ${deliveryRules.outsideJoypurhat.days}`}</p>
-              <p className="font-semibold text-[#111111]">{deliveryRules.codAdvanceMessage}</p>
+              <p className="font-semibold text-[#111111]">
+                {deliveryRules.codAdvanceMessage}
+              </p>
             </div>
           </div>
 
@@ -100,38 +195,54 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold">Payment Method</h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {paymentMethods.map((method) => (
-                <label
-                  key={method}
-                  className="rounded-2xl border border-black/10 p-4"
-                >
-                  <input
-                    type="radio"
-                    name="payment_method"
-                    value={method}
-                    className="mr-2"
-                    required
-                  />
-                  <span className="font-bold">{method}</span>
-                </label>
-              ))}
+              {paymentMethods.map((method) => {
+                const isSelected = formData.payment_method === method;
+
+                return (
+                  <label
+                    key={method}
+                    className={`cursor-pointer rounded-2xl border p-4 transition ${
+                      isSelected
+                        ? "border-[#C8A45D] bg-[#F3EFE6] shadow-sm"
+                        : "border-black/10 bg-white"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value={method}
+                      checked={isSelected}
+                      onChange={handleChange}
+                      className="mr-2"
+                      required
+                    />
+                    <span className="font-bold">{method}</span>
+                  </label>
+                );
+              })}
             </div>
 
             <div className="mt-5 rounded-2xl bg-[#F3EFE6] p-4 text-sm leading-7">
               <p>
                 Payment Number: <strong>{paymentNumber}</strong>
               </p>
-              <p>{deliveryRules.codAdvanceMessage}</p>
+              <p className="font-semibold text-[#111111]">
+                {deliveryRules.codAdvanceMessage}
+              </p>
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <input
                 name="transaction_id"
+                value={formData.transaction_id}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Transaction ID"
               />
               <input
                 name="sender_number"
+                value={formData.sender_number}
+                onChange={handleChange}
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Sender Number Optional"
               />
@@ -142,6 +253,8 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold">Order Notes</h2>
             <textarea
               name="order_notes"
+              value={formData.order_notes}
+              onChange={handleChange}
               className="mt-5 min-h-24 w-full rounded-md border border-black/10 px-4 py-3"
               placeholder="Any special instruction?"
             />
@@ -172,11 +285,18 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {errorMessage ? (
+            <p className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
+
           <button
             type="submit"
-            className="mt-6 w-full rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]"
+            disabled={isSubmitting}
+            className="mt-6 w-full rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white transition hover:bg-[#C8A45D] hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Place Order
+            {isSubmitting ? "Placing Order..." : "Place Order"}
           </button>
 
           <p className="mt-4 text-xs leading-6 text-black/50">
