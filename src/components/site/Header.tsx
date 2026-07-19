@@ -9,12 +9,21 @@ export function Header() {
           {brandName}
         </Link>
 
-        <nav className="hidden gap-8 md:flex">
+        <nav className="hidden flex-wrap items-center justify-end gap-4 lg:gap-6 md:flex">
           <Link href="/" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
             Home
           </Link>
           <Link href="/shop" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
             Shop
+          </Link>
+          <Link href="/about" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
+            About
+          </Link>
+          <Link href="/contact" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
+            Contact
+          </Link>
+          <Link href="/faq" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
+            FAQ
           </Link>
           <Link href="/cart" className="text-sm font-medium text-[#111111] hover:text-[#C8A45D]">
             Cart

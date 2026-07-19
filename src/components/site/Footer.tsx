@@ -32,6 +32,21 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/about" className="hover:text-[#C8A45D]">
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-[#C8A45D]">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className="hover:text-[#C8A45D]">
+                FAQ
+              </Link>
+            </li>
+            <li>
               <Link href="/checkout" className="hover:text-[#C8A45D]">
                 Checkout
               </Link>
