@@ -1,27 +1,12 @@
 import Link from "next/link";
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
+import { deliveryRules, paymentMethods, paymentNumber } from "@/lib/brand";
 
 export default function CheckoutPage() {
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-2xl font-bold">
-            Dadur Bari
-          </Link>
-
-          <nav className="flex gap-6 text-sm font-medium">
-            <Link href="/" className="hover:text-[#C8A45D]">
-              Home
-            </Link>
-            <Link href="/shop" className="hover:text-[#C8A45D]">
-              Shop
-            </Link>
-            <Link href="/cart" className="hover:text-[#C8A45D]">
-              Cart
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <section className="bg-[#111111] py-16 text-white">
         <div className="mx-auto max-w-7xl px-6">
@@ -96,9 +81,9 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-5 rounded-2xl bg-[#F3EFE6] p-4 text-sm leading-7">
-              <p>Inside Joypurhat Delivery Charge: ৳100</p>
-              <p>Outside Joypurhat Delivery Charge: ৳150</p>
-              <p>Delivery Time: 1–4 Days</p>
+              <p>{`Inside Joypurhat Delivery Charge: ৳${deliveryRules.insideJoypurhat.charge}`}</p>
+              <p>{`Outside Joypurhat Delivery Charge: ৳${deliveryRules.outsideJoypurhat.charge}`}</p>
+              <p>{`Delivery Time: ${deliveryRules.insideJoypurhat.days} / ${deliveryRules.outsideJoypurhat.days}`}</p>
             </div>
           </div>
 
@@ -106,32 +91,28 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold">Payment Method</h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {["bKash", "Nagad", "Rocket", "Cash On Delivery"].map(
-                (method) => (
-                  <label
-                    key={method}
-                    className="rounded-2xl border border-black/10 p-4"
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value={method}
-                      className="mr-2"
-                      required
-                    />
-                    <span className="font-bold">{method}</span>
-                  </label>
-                )
-              )}
+              {paymentMethods.map((method) => (
+                <label
+                  key={method}
+                  className="rounded-2xl border border-black/10 p-4"
+                >
+                  <input
+                    type="radio"
+                    name="payment_method"
+                    value={method}
+                    className="mr-2"
+                    required
+                  />
+                  <span className="font-bold">{method}</span>
+                </label>
+              ))}
             </div>
 
             <div className="mt-5 rounded-2xl bg-[#F3EFE6] p-4 text-sm leading-7">
               <p>
-                Payment Number: <strong>01746-212501</strong>
+                Payment Number: <strong>{paymentNumber}</strong>
               </p>
-              <p>
-                COD Available — Delivery charge must be paid in advance.
-              </p>
+              <p>{deliveryRules.codAdvanceMessage}</p>
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -198,6 +179,8 @@ export default function CheckoutPage() {
           </p>
         </aside>
       </form>
+
+      <Footer />
     </main>
   );
 }

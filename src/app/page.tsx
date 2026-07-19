@@ -1,51 +1,14 @@
-import Link from "next/link";
-
-const products = [
-  {
-    name: "Premium Oversized T-Shirt",
-    price: 799,
-    category: "Premium",
-    badge: "Pre Order"
-  },
-  {
-    name: "Gold Custom DTF T-Shirt",
-    price: 599,
-    category: "Gold",
-    badge: "Best Seller"
-  },
-  {
-    name: "Silver Everyday T-Shirt",
-    price: 449,
-    category: "Silver",
-    badge: "New"
-  }
-];
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
+import { SectionTitle } from "@/components/site/SectionTitle";
+import { ProductCard } from "@/components/product/ProductCard";
+import { brandName, tagline } from "@/lib/brand";
+import { products } from "@/lib/products";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
-      <header className="sticky top-0 z-50 border-b border-black/10 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-2xl font-bold">
-            Dadur Bari
-          </Link>
-
-          <nav className="hidden gap-8 md:flex">
-            <a href="#shop" className="text-sm font-medium hover:text-[#C8A45D]">
-              Shop
-            </a>
-            <a href="#quality" className="text-sm font-medium hover:text-[#C8A45D]">
-              Quality
-            </a>
-            <a href="#dtf" className="text-sm font-medium hover:text-[#C8A45D]">
-              DTF Printing
-            </a>
-            <a href="#contact" className="text-sm font-medium hover:text-[#C8A45D]">
-              Contact
-            </a>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <section className="bg-[#111111] text-white">
         <div className="mx-auto grid min-h-[80vh] max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2">
@@ -55,11 +18,11 @@ export default function Home() {
             </p>
 
             <h1 className="text-5xl font-extrabold leading-tight md:text-7xl">
-              Wear Your Identity.
+              {tagline}
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-white/70">
-              Dadur Bari creates premium custom printed T-shirts with durable
+              {brandName} creates premium custom printed T-shirts with durable
               DTF printing, comfortable fabric and a clean modern fashion
               experience.
             </p>
@@ -84,7 +47,7 @@ export default function Home() {
           <div className="rounded-3xl bg-white/10 p-8 shadow-2xl">
             <div className="flex aspect-square items-center justify-center rounded-2xl bg-[#F3EFE6] text-center text-[#111111]">
               <div>
-                <p className="text-4xl font-bold">Dadur Bari</p>
+                <p className="text-4xl font-bold">{brandName}</p>
                 <p className="mt-3 text-lg">Premium DTF T-Shirts</p>
               </div>
             </div>
@@ -93,35 +56,27 @@ export default function Home() {
       </section>
 
       <section id="quality" className="mx-auto max-w-7xl px-6 py-20">
-        <div className="text-center">
-          <p className="font-semibold uppercase tracking-[0.2em] text-[#C8A45D]">
-            Shop By Quality
-          </p>
-
-          <h2 className="mt-3 text-4xl font-bold">
-            Silver, Gold & Premium
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-black/60">
-            Choose the quality category that matches your comfort, budget and
-            premium fashion preference.
-          </p>
-        </div>
+        <SectionTitle
+          eyebrow="Shop By Quality"
+          title="Silver, Gold & Premium"
+          description="Choose the quality category that matches your comfort, budget and premium fashion preference."
+          center
+        />
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             {
               title: "Silver Collection",
-              text: "Entry level premium quality for everyday comfort."
+              text: "Entry level premium quality for everyday comfort.",
             },
             {
               title: "Gold Collection",
-              text: "Most popular quality with better fabric and durable DTF print."
+              text: "Most popular quality with better fabric and durable DTF print.",
             },
             {
               title: "Premium Collection",
-              text: "Luxury feel with superior fabric, GSM and premium finish."
-            }
+              text: "Luxury feel with superior fabric, GSM and premium finish.",
+            },
           ].map((item) => (
             <div
               key={item.title}
@@ -156,32 +111,7 @@ export default function Home() {
 
           <div className="grid gap-6 md:grid-cols-3">
             {products.map((product) => (
-              <div
-                key={product.name}
-                className="rounded-3xl border border-black/10 bg-white p-5 shadow-lg"
-              >
-                <div className="flex aspect-square items-center justify-center rounded-2xl bg-[#F3EFE6] p-6 text-center">
-                  <p className="text-xl font-bold">{product.name}</p>
-                </div>
-
-                <div className="mt-5">
-                  <span className="rounded-full bg-[#C8A45D] px-3 py-1 text-xs font-semibold">
-                    {product.badge}
-                  </span>
-
-                  <h3 className="mt-4 text-xl font-bold">{product.name}</h3>
-
-                  <p className="mt-1 text-sm text-black/50">
-                    {product.category} Collection
-                  </p>
-
-                  <p className="mt-4 text-2xl font-bold">৳{product.price}</p>
-
-                  <button className="mt-5 w-full rounded-md bg-[#111111] px-5 py-3 font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]">
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
+              <ProductCard key={product.slug} product={product} />
             ))}
           </div>
         </div>
@@ -221,7 +151,7 @@ export default function Home() {
 
       <section id="contact" className="bg-[#111111] py-20 text-white">
         <div className="mx-auto max-w-7xl px-6 text-center">
-          <h2 className="text-4xl font-bold">Contact Dadur Bari</h2>
+          <h2 className="text-4xl font-bold">Contact {brandName}</h2>
 
           <div className="mt-6 space-y-2 text-white/70">
             <p>Phone: 01746-212501</p>
@@ -230,10 +160,12 @@ export default function Home() {
           </div>
 
           <p className="mt-10 text-sm text-white/50">
-            © 2026 Dadur Bari. Wear Your Identity.
+            © 2026 {brandName}. {tagline}
           </p>
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

@@ -1,85 +1,35 @@
 import Link from "next/link";
-
-const products = [
-  {
-    slug: "premium-oversized-tshirt",
-    name: "Premium Oversized T-Shirt",
-    price: 799,
-    oldPrice: 999,
-    category: "Premium",
-    badge: "Pre Order",
-    fabric: "Premium Cotton",
-    gsm: "220 GSM",
-    description:
-      "Luxury oversized T-shirt with premium fabric, comfortable fit and durable DTF printing."
-  },
-  {
-    slug: "gold-custom-dtf-tshirt",
-    name: "Gold Custom DTF T-Shirt",
-    price: 599,
-    oldPrice: 749,
-    category: "Gold",
-    badge: "Best Seller",
-    fabric: "Soft Cotton",
-    gsm: "190 GSM",
-    description:
-      "Most popular Dadur Bari T-shirt with balanced quality, comfort and durable DTF printing."
-  },
-  {
-    slug: "silver-everyday-tshirt",
-    name: "Silver Everyday T-Shirt",
-    price: 449,
-    oldPrice: 549,
-    category: "Silver",
-    badge: "New",
-    fabric: "Comfort Cotton",
-    gsm: "170 GSM",
-    description:
-      "Entry level premium T-shirt for everyday use with clean design and comfortable fabric."
-  }
-];
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
+import { getProductBySlug } from "@/lib/products";
 
 export default async function ProductPage({
-  params
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
-  const product = products.find((item) => item.slug === slug);
+  const product = getProductBySlug(slug);
 
   if (!product) {
     return (
       <main className="min-h-screen bg-[#F3EFE6] p-10 text-[#111111]">
-        <h1 className="text-4xl font-bold">Product Not Found</h1>
-        <Link href="/shop" className="mt-6 inline-block underline">
-          Back to Shop
-        </Link>
+        <Header />
+        <div className="mx-auto max-w-4xl px-6 py-16">
+          <h1 className="text-4xl font-bold">Product Not Found</h1>
+          <Link href="/shop" className="mt-6 inline-block underline">
+            Back to Shop
+          </Link>
+        </div>
+        <Footer />
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-2xl font-bold">
-            Dadur Bari
-          </Link>
-
-          <nav className="flex gap-6 text-sm font-medium">
-            <Link href="/" className="hover:text-[#C8A45D]">
-              Home
-            </Link>
-            <Link href="/shop" className="hover:text-[#C8A45D]">
-              Shop
-            </Link>
-            <Link href="/cart" className="hover:text-[#C8A45D]">
-              Cart
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-2">
         <div className="rounded-3xl bg-white p-6 shadow-lg">
@@ -92,7 +42,7 @@ export default async function ProductPage({
         </div>
 
         <div className="rounded-3xl bg-white p-8 shadow-lg">
-          <span className="rounded-full bg-[#C8A45D] px-4 py-2 text-sm font-semibold">
+          <span className="rounded-full bg-[#C8A45D] px-4 py-2 text-sm font-semibold text-[#111111]">
             {product.badge}
           </span>
 
@@ -129,14 +79,14 @@ export default async function ProductPage({
 
             <div className="rounded-2xl bg-[#F3EFE6] p-4">
               <p className="text-sm text-black/50">Print Type</p>
-              <p className="font-bold">DTF Printing</p>
+              <p className="font-bold">{product.printType}</p>
             </div>
           </div>
 
           <div className="mt-8">
             <p className="mb-3 font-semibold">Select Size</p>
             <div className="flex flex-wrap gap-3">
-              {["M", "L", "XL", "XXL"].map((size) => (
+              {product.sizes.map((size) => (
                 <button
                   key={size}
                   className="rounded-md border border-black/20 px-5 py-3 font-semibold hover:bg-[#111111] hover:text-white"
@@ -165,12 +115,13 @@ export default async function ProductPage({
 
           <div className="mt-8 rounded-2xl bg-[#F3EFE6] p-5 text-sm leading-7 text-black/70">
             <p>✓ Premium DTF Printing</p>
-            <p>✓ Inside Joypurhat: 1–2 Days</p>
-            <p>✓ Outside Joypurhat: 2–4 Days</p>
+            <p>{`✓ ${product.deliveryInfo}`}</p>
             <p>✓ COD Available — Advance Delivery Charge Required</p>
           </div>
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

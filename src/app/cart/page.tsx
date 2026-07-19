@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
+import { deliveryRules } from "@/lib/brand";
 
 const cartItems = [
   {
@@ -6,15 +9,15 @@ const cartItems = [
     size: "L",
     category: "Premium",
     price: 799,
-    quantity: 1
+    quantity: 1,
   },
   {
     name: "Gold Custom DTF T-Shirt",
     size: "XL",
     category: "Gold",
     price: 599,
-    quantity: 1
-  }
+    quantity: 1,
+  },
 ];
 
 const subtotal = cartItems.reduce(
@@ -22,31 +25,13 @@ const subtotal = cartItems.reduce(
   0
 );
 
-const deliveryCharge = 100;
+const deliveryCharge = deliveryRules.insideJoypurhat.charge;
 const total = subtotal + deliveryCharge;
 
 export default function CartPage() {
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-2xl font-bold">
-            Dadur Bari
-          </Link>
-
-          <nav className="flex gap-6 text-sm font-medium">
-            <Link href="/" className="hover:text-[#C8A45D]">
-              Home
-            </Link>
-            <Link href="/shop" className="hover:text-[#C8A45D]">
-              Shop
-            </Link>
-            <Link href="/cart" className="text-[#C8A45D]">
-              Cart
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <section className="bg-[#111111] py-16 text-white">
         <div className="mx-auto max-w-7xl px-6">
@@ -123,6 +108,8 @@ export default function CartPage() {
           </Link>
         </aside>
       </section>
+
+      <Footer />
     </main>
   );
 }
