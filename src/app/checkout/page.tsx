@@ -32,21 +32,39 @@ export default function CheckoutPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[1fr_380px]">
+      <form
+        action="https://formspree.io/f/mqerqlyw"
+        method="POST"
+        className="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[1fr_380px]"
+      >
+        <input type="hidden" name="_subject" value="New Dadur Bari Order" />
+        <input
+          type="hidden"
+          name="order_items"
+          value="Premium Oversized T-Shirt + Gold Custom DTF T-Shirt"
+        />
+        <input type="hidden" name="order_total" value="1498 BDT" />
+
         <div className="space-y-6">
           <div className="rounded-3xl bg-white p-6 shadow-lg">
             <h2 className="text-2xl font-bold">Customer Information</h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
+                name="full_name"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Full Name"
+                required
               />
               <input
+                name="phone"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Phone Number"
+                required
               />
               <input
+                name="email"
+                type="email"
                 className="rounded-md border border-black/10 px-4 py-3 md:col-span-2"
                 placeholder="Email Optional"
               />
@@ -58,16 +76,22 @@ export default function CheckoutPage() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
+                name="district"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="District"
+                required
               />
               <input
+                name="area"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Area"
+                required
               />
               <textarea
+                name="address"
                 className="min-h-28 rounded-md border border-black/10 px-4 py-3 md:col-span-2"
                 placeholder="Full Address"
+                required
               />
             </div>
 
@@ -84,12 +108,19 @@ export default function CheckoutPage() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {["bKash", "Nagad", "Rocket", "Cash On Delivery"].map(
                 (method) => (
-                  <div
+                  <label
                     key={method}
                     className="rounded-2xl border border-black/10 p-4"
                   >
-                    <p className="font-bold">{method}</p>
-                  </div>
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value={method}
+                      className="mr-2"
+                      required
+                    />
+                    <span className="font-bold">{method}</span>
+                  </label>
                 )
               )}
             </div>
@@ -105,14 +136,25 @@ export default function CheckoutPage() {
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <input
+                name="transaction_id"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Transaction ID"
               />
               <input
+                name="sender_number"
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="Sender Number Optional"
               />
             </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 shadow-lg">
+            <h2 className="text-2xl font-bold">Order Notes</h2>
+            <textarea
+              name="order_notes"
+              className="mt-5 min-h-24 w-full rounded-md border border-black/10 px-4 py-3"
+              placeholder="Any special instruction?"
+            />
           </div>
         </div>
 
@@ -143,19 +185,19 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <Link
-            href="/checkout/success"
-            className="mt-6 block rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]"
+          <button
+            type="submit"
+            className="mt-6 w-full rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]"
           >
             Place Order
-          </Link>
+          </button>
 
           <p className="mt-4 text-xs leading-6 text-black/50">
             By placing this order, you confirm that your information is correct.
             Payment will be manually verified by Dadur Bari.
           </p>
         </aside>
-      </section>
+      </form>
     </main>
   );
 }
