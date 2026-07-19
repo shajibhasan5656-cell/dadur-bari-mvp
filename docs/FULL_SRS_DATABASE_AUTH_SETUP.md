@@ -7,9 +7,9 @@ This document captures the foundation required to move from the current MVP expe
 ## Database Requirements
 
 - Use Neon PostgreSQL for the production database.
-- Keep the schema definitions in src/lib/db/schema.ts.
+- Keep the schema in src/lib/db/schema.ts.
 - Use Drizzle ORM for schema definition and future migrations.
-- Do not require DATABASE_URL during static build if the app is being previewed without a live database connection.
+- The app does not require a live database connection during normal static builds.
 
 ## Required Environment Variables
 
@@ -21,20 +21,59 @@ Create the following environment variables before connecting the final auth and 
 - NEXT_PUBLIC_APP_URL=https://your-domain.com
 - NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
-## Owner and Admin Seed Plan
+## Tables Created
 
-- Create an owner account first.
-- Use a secure password and store a hash rather than plaintext.
-- Seed the initial role hierarchy with OWNER, SUPER_ADMIN, MANAGER, INVENTORY_STAFF, CUSTOMER_SUPPORT, MARKETING_MANAGER, CONTENT_MANAGER, and CUSTOMER.
+The schema foundation includes:
 
-## Migration Plan
+- users
+- roles
+- permissions
+- role_permissions
+- products
+- product_variants
+- product_images
+- categories
+- collections
+- inventory
+- inventory_logs
+- orders
+- order_items
+- payments
+- addresses
+- wishlists
+- reviews
+- coupons
+- coupon_usage
+- notifications
+- support_tickets
+- activity_logs
+- site_settings
+- seo_settings
+- media_library
 
-1. Create PostgreSQL tables for users, roles, permissions, products, variants, categories, collections, orders, payments, inventory, coupons, notifications, activity logs, and site settings.
-2. Generate migrations with Drizzle.
-3. Seed initial categories, collections, and site settings.
+## Migration and Seed Commands
+
+Run the following from the project root:
+
+- npm run db:push
+- npm run db:seed
+
+If you prefer migrations:
+
+- npm run db:generate
+- npm run db:migrate
+
+## Seed Data
+
+The seed script creates:
+
+- roles for OWNER, SUPER_ADMIN, MANAGER, INVENTORY_STAFF, CUSTOMER_SUPPORT, MARKETING_MANAGER, CONTENT_MANAGER, and CUSTOMER
+- site settings for business info, payment number, delivery charges, and brand colors
+- categories for Silver, Gold, and Premium
+- collections for Oversized, Anime, and Minimal
 
 ## Final Protected Admin Login
 
-- The admin login route is now scaffolded at /admin-login.
+- The admin login route is scaffolded at /admin-login.
 - The production admin experience will be protected by auth middleware and role-based access once the database connection is live.
-- Until then, the route is intentionally a UI foundation and should not be treated as a complete secure login.
+- Authentication is not implemented in this task.

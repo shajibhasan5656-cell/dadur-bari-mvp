@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { brandName } from "@/lib/brand";
 
 const sidebarItems = [
@@ -24,7 +26,20 @@ const sidebarItems = [
   "Security",
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const cookieStore = await cookies();
+  const sessionValue = cookieStore.get("dadur_bari_admin_session")?.value;
+
+  if (!sessionValue) {
+    redirect("/admin-login");
+  }
+
+  const session = sessionValue ? JSON.parse(Buffer.from(sessionValue, "base64url").toString("utf-8")) : null;
+
+  if (!session) {
+    redirect("/admin-login");
+  }
+
   return (
     <div className="min-h-screen bg-[#F3EFE6] text-[#111111]">
       <div className="flex min-h-screen flex-col lg:flex-row">
@@ -59,7 +74,7 @@ export default function AdminPage() {
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#C8A45D]">Final SRS Direction</p>
                 <h2 className="mt-3 text-3xl font-bold">Admin Dashboard</h2>
                 <p className="mt-3 max-w-2xl text-lg leading-8 text-black/70">
-                  This shell establishes the final admin architecture for products, orders, content, security, and role-based access.
+                  Welcome back, {session.userId ?? "Admin"}. This shell now reflects the final role-based admin direction for Dadur Bari.
                 </p>
               </div>
 
@@ -67,7 +82,7 @@ export default function AdminPage() {
                 href="/admin-login"
                 className="rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#2E3A2F]"
               >
-                Go to Admin Login
+                Manage Access
               </Link>
             </div>
 
@@ -84,7 +99,7 @@ export default function AdminPage() {
               </div>
               <div className="rounded-3xl bg-[#F3EFE6] p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#2E3A2F]">Access</p>
-                <p className="mt-3 text-3xl font-bold">Owner</p>
+                <p className="mt-3 text-3xl font-bold">{session.role}</p>
                 <p className="mt-2 text-sm text-black/65">Role-based foundation prepared</p>
               </div>
             </div>
@@ -92,7 +107,7 @@ export default function AdminPage() {
             <div className="mt-8 rounded-3xl border border-black/10 bg-[#111111] p-6 text-white">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#C8A45D]">Implementation note</p>
               <p className="mt-3 text-base leading-8 text-white/80">
-                The final protected admin experience will be connected to a secure database-backed session system and role-based permissions in the next implementation stage.
+                The final protected admin experience is now connected to a cookie-based session foundation backed by the database user store.
               </p>
             </div>
           </div>
