@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { deliveryRules } from "@/lib/brand";
 import { getProductBySlug } from "@/lib/products";
 
 export default async function ProductPage({
@@ -115,8 +116,9 @@ export default async function ProductPage({
 
           <div className="mt-8 rounded-2xl bg-[#F3EFE6] p-5 text-sm leading-7 text-black/70">
             <p>✓ Premium DTF Printing</p>
-            <p>{`✓ ${product.deliveryInfo}`}</p>
-            <p>✓ COD Available — Advance Delivery Charge Required</p>
+            <p>{`✓ Inside Joypurhat: ${deliveryRules.insideJoypurhat.days} · ${deliveryRules.insideJoypurhat.charge} BDT`}</p>
+            <p>{`✓ Outside Joypurhat: ${deliveryRules.outsideJoypurhat.days} · ${deliveryRules.outsideJoypurhat.charge} BDT`}</p>
+            <p>{`✓ ${deliveryRules.codAdvanceMessage}`}</p>
           </div>
         </div>
       </section>

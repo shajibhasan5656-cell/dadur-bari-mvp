@@ -1,7 +1,15 @@
-import Link from "next/link";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { deliveryRules, paymentMethods, paymentNumber } from "@/lib/brand";
+
+const orderItems = [
+  { name: "Premium Oversized T-Shirt", price: 799 },
+  { name: "Gold Custom DTF T-Shirt", price: 599 },
+];
+
+const subtotal = orderItems.reduce((total, item) => total + item.price, 0);
+const deliveryCharge = deliveryRules.insideJoypurhat.charge;
+const total = subtotal + deliveryCharge;
 
 export default function CheckoutPage() {
   return (
@@ -84,6 +92,7 @@ export default function CheckoutPage() {
               <p>{`Inside Joypurhat Delivery Charge: ৳${deliveryRules.insideJoypurhat.charge}`}</p>
               <p>{`Outside Joypurhat Delivery Charge: ৳${deliveryRules.outsideJoypurhat.charge}`}</p>
               <p>{`Delivery Time: ${deliveryRules.insideJoypurhat.days} / ${deliveryRules.outsideJoypurhat.days}`}</p>
+              <p className="font-semibold text-[#111111]">{deliveryRules.codAdvanceMessage}</p>
             </div>
           </div>
 
@@ -143,25 +152,22 @@ export default function CheckoutPage() {
           <h2 className="text-2xl font-bold">Order Summary</h2>
 
           <div className="mt-6 space-y-4 text-sm">
-            <div className="flex justify-between">
-              <span>Premium Oversized T-Shirt</span>
-              <span>৳799</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Gold Custom DTF T-Shirt</span>
-              <span>৳599</span>
-            </div>
+            {orderItems.map((item) => (
+              <div key={item.name} className="flex justify-between">
+                <span>{item.name}</span>
+                <span>৳{item.price}</span>
+              </div>
+            ))}
 
             <div className="flex justify-between">
               <span>Delivery Charge</span>
-              <span>৳100</span>
+              <span>৳{deliveryCharge}</span>
             </div>
 
             <div className="border-t border-black/10 pt-4">
               <div className="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span>৳1498</span>
+                <span>৳{total}</span>
               </div>
             </div>
           </div>
