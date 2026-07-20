@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -108,7 +109,7 @@ async function main() {
   for (const product of sampleProducts) {
     const category = categoryLookup.find((entry) => entry.name === product.category);
     const collection = collectionLookup.find((entry) => entry.name === product.collection);
-    const existing = await db.select().from(products).where((productsTable) => productsTable.slug === product.slug);
+    const existing = await db.select().from(products).where(eq(products.slug, product.slug));
     if (existing[0]) {
       continue;
     }
