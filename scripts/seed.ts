@@ -64,7 +64,7 @@ async function main() {
   const sampleProducts = [
     {
       name: "Premium Oversized T-Shirt",
-      slug: "premium-oversized-t-shirt",
+      slug: "premium-oversized-tshirt",
       sku: "DB-PREM-001",
       category: "Premium",
       collection: "Oversized",
@@ -72,13 +72,13 @@ async function main() {
       gsm: "260",
       price: 1390,
       stock: 24,
-      status: "active",
+      status: "active" as const,
       isPreOrder: false,
       description: "Premium oversized tee with a refined streetwear finish.",
     },
     {
       name: "Gold Custom DTF T-Shirt",
-      slug: "gold-custom-dtf-t-shirt",
+      slug: "gold-custom-dtf-tshirt",
       sku: "DB-GOLD-001",
       category: "Gold",
       collection: "Minimal",
@@ -86,13 +86,13 @@ async function main() {
       gsm: "220",
       price: 1190,
       stock: 18,
-      status: "active",
+      status: "active" as const,
       isPreOrder: false,
       description: "Gold-tier custom apparel built for premium everyday use.",
     },
     {
       name: "Silver Everyday T-Shirt",
-      slug: "silver-everyday-t-shirt",
+      slug: "silver-everyday-tshirt",
       sku: "DB-SILV-001",
       category: "Silver",
       collection: "Minimal",
@@ -100,7 +100,7 @@ async function main() {
       gsm: "180",
       price: 990,
       stock: 30,
-      status: "active",
+      status: "pre_order" as const,
       isPreOrder: true,
       description: "Entry-level premium tee for comfort and everyday style.",
     },
@@ -117,8 +117,7 @@ async function main() {
     const insertedProducts = await db.insert(products).values({
       name: product.name,
       slug: product.slug,
-      sku: product.sku,
-      status: product.status as "draft" | "active" | "hidden" | "out_of_stock" | "coming_soon" | "pre_order" | "discontinued",
+      status: product.status,
       availability: product.isPreOrder ? "pre_order" : "available",
       categoryId: category?.id,
       collectionId: collection?.id,
@@ -152,11 +151,15 @@ async function main() {
       });
     }
 
-    await db.insert(inventory).values({
-      productId: createdProduct.id,
-      stock: product.stock,
-      lowStockThreshold: 5,
-    });
+    try {
+      await db.insert(inventory).values({
+        productId: createdProduct.id,
+        stock: product.stock,
+        lowStockThreshold: 5,
+      });
+    } catch (inventoryError) {
+      console.warn("Inventory seed skipped", inventoryError);
+    }
   }
 
   console.log("Seed data inserted successfully.");

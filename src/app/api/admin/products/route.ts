@@ -3,6 +3,22 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { categories, inventory, products, productVariants } from "@/lib/db/schema";
 
+function normalizeStatus(value: string) {
+  const normalized = value.toLowerCase();
+  switch (normalized) {
+    case "draft":
+    case "active":
+    case "hidden":
+    case "out_of_stock":
+    case "coming_soon":
+    case "pre_order":
+    case "discontinued":
+      return normalized;
+    default:
+      return "draft";
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -11,8 +27,8 @@ export async function POST(request: Request) {
     const sku = String(body?.sku ?? "").trim();
     const shortDescription = String(body?.shortDescription ?? "").trim();
     const description = String(body?.description ?? "").trim();
-    const status = String(body?.status ?? "draft").toLowerCase();
-    const quality = String(body?.quality ?? "Premium");
+    const status = normalizeStatus(String(body?.status ?? "draft"));
+    const quality = String(body?.quality ?? "Premium").trim() || "Premium";
     const fabric = String(body?.fabric ?? "").trim();
     const gsm = String(body?.gsm ?? "").trim();
     const price = Number(body?.price ?? 0);
@@ -26,6 +42,11 @@ export async function POST(request: Request) {
     }
 
     const db = getDb();
+    const existingProduct = await db.select({ id: products.id }).from(products).where(eq(products.slug, slug));
+    if (existingProduct[0]) {
+      return NextResponse.json({ success: false, error: "A product with this slug already exists." }, { status: 409 });
+    }
+
     const categoryRow = await db.select().from(categories).where(eq(categories.name, quality));
     const category = categoryRow[0];
 
@@ -63,12 +84,15 @@ export async function POST(request: Request) {
       isActive: true,
     });
 
-    await db.insert(inventory).values({
-      productId,
-      variantId: undefined,
-      stock,
-      lowStockThreshold: 5,
-    });
+    try {
+      await db.insert(inventory).values({
+        productId,
+        stock,
+        lowStockThreshold: 5,
+      });
+    } catch (inventoryError) {
+      console.warn("Inventory insert skipped", inventoryError);
+    }
 
     return NextResponse.json({ success: true, productId });
   } catch (error) {

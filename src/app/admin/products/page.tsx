@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { readAdminSession } from "@/lib/auth/admin-session";
 import { getDb } from "@/lib/db";
-import { categories, collections, products, productVariants, inventory } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { categories, collections, inventory, products, productVariants } from "@/lib/db/schema";
+import { eq, inArray } from "drizzle-orm";
 
 export default async function AdminProductsPage() {
   const session = await readAdminSession();
@@ -27,20 +27,28 @@ export default async function AdminProductsPage() {
     .from(products)
     .leftJoin(categories, eq(categories.id, products.categoryId))
     .leftJoin(collections, eq(collections.id, products.collectionId))
-    .orderBy(sql`${products.createdAt} DESC`);
+    .orderBy(products.createdAt);
 
   const productIds = productRows.map((row) => row.id);
   const variantRows = productIds.length
-    ? await db.select().from(productVariants).where(sql`${productVariants.productId} = ANY(${productIds})`)
+    ? await db.select().from(productVariants).where(inArray(productVariants.productId, productIds))
     : [];
   const inventoryRows = productIds.length
-    ? await db.select().from(inventory).where(sql`${inventory.productId} = ANY(${productIds})`)
+    ? await db.select().from(inventory).where(inArray(inventory.productId, productIds))
     : [];
 
   const variantStockMap = new Map<string, number>();
+  const variantSkuMap = new Map<string, string>();
   for (const variant of variantRows) {
-    if (variant.productId) {
-      variantStockMap.set(variant.productId, (variantStockMap.get(variant.productId) ?? 0) + Number(variant.stock ?? 0));
+    if (!variant.productId) {
+      continue;
+    }
+
+    const currentStock = variantStockMap.get(variant.productId) ?? 0;
+    variantStockMap.set(variant.productId, currentStock + Number(variant.stock ?? 0));
+
+    if (!variantSkuMap.has(variant.productId) && variant.sku) {
+      variantSkuMap.set(variant.productId, variant.sku);
     }
   }
 
@@ -84,29 +92,28 @@ export default async function AdminProductsPage() {
                   <th className="rounded-tl-2xl px-4 py-3">Product</th>
                   <th className="px-4 py-3">SKU</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3">Collection</th>
+                  <th className="px-4 py-3">Category / Quality</th>
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Stock</th>
-                  <th className="px-4 py-3">Pre Order</th>
+                  <th className="px-4 py-3">Pre-order</th>
                   <th className="rounded-tr-2xl px-4 py-3">Created</th>
                 </tr>
               </thead>
               <tbody>
                 {productRows.map((product) => {
                   const stock = inventoryStockMap.get(product.id) ?? variantStockMap.get(product.id) ?? 0;
-                  const isPreOrder = product.status === "pre_order" || product.status === "active" && Number(stock) === 0;
+                  const sku = variantSkuMap.get(product.id) ?? "—";
+                  const isPreOrder = product.status === "pre_order" || (product.status === "active" && Number(stock) === 0);
                   return (
                     <tr key={product.id} className="border-b border-black/10 bg-white">
                       <td className="px-4 py-4 font-semibold">{product.name}</td>
-                      <td className="px-4 py-4">{product.slug.toUpperCase()}</td>
+                      <td className="px-4 py-4">{sku}</td>
                       <td className="px-4 py-4 capitalize">{product.status}</td>
                       <td className="px-4 py-4">{product.categoryName ?? "—"}</td>
-                      <td className="px-4 py-4">{product.collectionName ?? "—"}</td>
                       <td className="px-4 py-4">{product.price} BDT</td>
                       <td className="px-4 py-4">{stock}</td>
                       <td className="px-4 py-4">{isPreOrder ? "Yes" : "No"}</td>
-                      <td className="px-4 py-4">{product.createdAt?.toLocaleDateString() ?? "—"}</td>
+                      <td className="px-4 py-4">{product.createdAt ? new Date(product.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "—"}</td>
                     </tr>
                   );
                 })}
