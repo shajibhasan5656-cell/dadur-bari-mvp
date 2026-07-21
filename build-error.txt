@@ -1,0 +1,27 @@
+
+> dadur-bari-mvp@0.1.0 build
+> next build
+
+▲ Next.js 16.2.10 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.9s
+  Running TypeScript ...
+Failed to type check.
+
+./src/lib/products-db.ts:64:5
+Type error: Type '{ id: string; name: string; slug: string; status: "draft" | "active" | "hidden" | "out_of_stock" | "coming_soon" | "pre_order" | "discontinued" | null; categoryName: string | null; collectionName: string | null; ... 5 more ...; createdAt: Date | null; }[]' is not assignable to type 'ProductListItem[]'.
+  Type '{ id: string; name: string; slug: string; status: "draft" | "active" | "hidden" | "out_of_stock" | "coming_soon" | "pre_order" | "discontinued" | null; categoryName: string | null; collectionName: string | null; ... 5 more ...; createdAt: Date | null; }' is not assignable to type 'ProductListItem'.
+    Types of property 'status' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+
+  [90m62 |[0m     });
+  [90m63 |[0m
+[31m[1m>[0m [90m64 |[0m     [36mreturn[0m rows.map((row) => ({
+  [90m   |[0m     [31m[1m^[0m
+  [90m65 |[0m       id: row.id,
+  [90m66 |[0m       name: row.name,
+  [90m67 |[0m       slug: row.slug,
+Next.js build worker exited with code: 1 and signal: null
