@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 
 async function updateProduct(formData: FormData) {
   "use server";
   const id = String(formData.get("id"));
-  await db.update(products).set({
+  await getDb().update(products).set({
     name: String(formData.get("name") || ""),
     slug: String(formData.get("slug") || ""),
     status: String(formData.get("status") || "draft") as any,
@@ -22,7 +22,7 @@ async function updateProduct(formData: FormData) {
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  const [product] = await getDb().select().from(products).where(eq(products.id, id)).limit(1);
 
   if (!product) {
     return (

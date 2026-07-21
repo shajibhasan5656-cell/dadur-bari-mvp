@@ -1,19 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 
 async function deleteProduct(formData: FormData) {
   "use server";
   const id = String(formData.get("id"));
-  await db.update(products).set({ deletedAt: new Date(), updatedAt: new Date() }).where(eq(products.id, id));
+  await getDb().update(products).set({ deletedAt: new Date(), updatedAt: new Date() }).where(eq(products.id, id));
   redirect("/admin/products");
 }
 
 export default async function DeleteProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  const [product] = await getDb().select().from(products).where(eq(products.id, id)).limit(1);
 
   return (
     <main className="min-h-screen bg-[#F3EFE6] p-8 text-[#111111]">
