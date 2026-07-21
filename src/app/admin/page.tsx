@@ -26,6 +26,23 @@ const sidebarItems = [
   "Security",
 ];
 
+const adminMenu = [
+  { label: "Dashboard", href: "/admin" },
+  { label: "Orders", href: "/admin/orders" },
+  { label: "Products", href: "/admin/products" },
+  { label: "Categories", href: "/admin/categories" },
+  { label: "Collections", href: "/admin/collections" },
+  { label: "Inventory", href: "/admin/inventory" },
+  { label: "Customers", href: "/admin/customers" },
+  { label: "Reviews", href: "/admin/reviews" },
+  { label: "Coupons", href: "/admin/coupons" },
+  { label: "Analytics", href: "/admin/analytics" },
+  { label: "Reports", href: "/admin/reports" },
+  { label: "Media Library", href: "/admin/media" },
+  { label: "SEO", href: "/admin/seo" },
+  { label: "Settings", href: "/admin/settings" },
+];
+
 export default async function AdminPage() {
   const cookieStore = await cookies();
   const sessionValue = cookieStore.get("dadur_bari_admin_session")?.value;
