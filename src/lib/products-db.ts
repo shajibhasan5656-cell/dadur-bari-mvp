@@ -65,14 +65,14 @@ export async function getPublishedProducts(): Promise<ProductListItem[]> {
       id: row.id,
       name: row.name,
       slug: row.slug,
-      status: row.status,
-      categoryName: row.categoryName,
-      collectionName: row.collectionName,
+      status: row.status ?? "draft",
+      categoryName: row.categoryName ?? null,
+      collectionName: row.collectionName ?? null,
       price: Number(row.price ?? 0),
       fabric: row.fabric,
       gsm: row.gsm,
       stock: inventoryMap.get(row.id) ?? variantMap.get(row.id) ?? 0,
-      isPreOrder: row.status === "pre_order",
+      isPreOrder: (row.status ?? "") === "pre_order",
       createdAt: row.createdAt,
     }));
   } catch {
