@@ -118,7 +118,7 @@ export async function getProductBySlug(slug: string): Promise<ProductListItem | 
       fabric: row.fabric,
       gsm: row.gsm,
       stock: 0,
-      isPreOrder: row.status === "pre_order",
+      isPreOrder: (row.status ?? "") === "pre_order",
       createdAt: row.createdAt,
     };
   } catch {
