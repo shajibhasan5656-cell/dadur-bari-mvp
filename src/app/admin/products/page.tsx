@@ -32,12 +32,12 @@ export default async function AdminProductsPage() {
                 <th>Status</th>
                 <th>Category</th>
                 <th>Price</th>
-                <th>Pre Order</th>
+                <th>Pre Order</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
-                <tr><td className="py-6 text-black/60" colSpan={6}>No products found. Run seed or add product.</td></tr>
+                <tr><td className="py-6 text-black/60" colSpan={7}>No products found. Run seed or add product.</td></tr>
               ) : (
                 products.map((product) => (
                   <tr key={product.id} className="border-b">
@@ -47,6 +47,11 @@ export default async function AdminProductsPage() {
                     <td>{product.categoryName ?? "-"}</td>
                     <td>৳{product.price ?? 0}</td>
                     <td>{product.isPreOrder ? "Yes" : "No"}</td>
+                    <td className="space-x-2">
+                      <Link href={`/admin/products/${product.id}/edit`} className="rounded bg-[#111111] px-3 py-2 text-xs font-semibold text-white">Edit</Link>
+                      <Link href={`/admin/products/${product.id}/status`} className="rounded bg-[#C8A45D] px-3 py-2 text-xs font-semibold text-[#111111]">Status</Link>
+                      <Link href={`/admin/products/${product.id}/delete`} className="rounded bg-red-100 px-3 py-2 text-xs font-semibold text-red-700">Delete</Link>
+                    </td>
                   </tr>
                 ))
               )}
