@@ -36,7 +36,7 @@ export default function AdminShell({
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
       <div className="grid min-h-screen lg:grid-cols-[300px_1fr]">
         <aside className="bg-[#111111] p-6 text-white">
-          <Link href="/" className="text-2xl font-bold">Dadur Bari</Link>
+          <Link href="/" className="flex items-center gap-3 text-2xl font-bold"><img src="/logo.png" alt="Dadur Bari Logo" className="h-10 w-10 rounded-full object-contain" /> <span>Dadur Bari</span></Link>
           <p className="mt-2 text-sm text-white/50">Admin Panel</p>
 
           <nav className="mt-8 space-y-1">
