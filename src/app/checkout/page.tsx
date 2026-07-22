@@ -1,153 +1,196 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Footer } from "@/components/site/Footer";
-import { Header } from "@/components/site/Header";
-import { deliveryRules, paymentMethods, paymentNumber } from "@/lib/brand";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
-const orderItems = [
-  { name: "Premium Oversized T-Shirt", price: 799 },
-  { name: "Gold Custom DTF T-Shirt", price: 599 },
+const products = [
+  {
+    name: "Premium Oversized T-Shirt",
+    slug: "premium-oversized-tshirt",
+    price: 799,
+    category: "Premium",
+    fabric: "Premium Cotton",
+    gsm: "220 GSM"
+  },
+  {
+    name: "Gold Custom DTF T-Shirt",
+    slug: "gold-custom-dtf-tshirt",
+    price: 599,
+    category: "Gold",
+    fabric: "Soft Cotton",
+    gsm: "190 GSM"
+  },
+  {
+    name: "Silver Everyday T-Shirt",
+    slug: "silver-everyday-tshirt",
+    price: 449,
+    category: "Silver",
+    fabric: "Comfort Cotton",
+    gsm: "170 GSM"
+  }
 ];
 
-const subtotal = orderItems.reduce((total, item) => total + item.price, 0);
-const deliveryCharge = deliveryRules.insideJoypurhat.charge;
-const total = subtotal + deliveryCharge;
-
-const initialFormData = {
-  full_name: "",
-  phone: "",
-  email: "",
-  district: "",
-  area: "",
-  address: "",
-  payment_method: "",
-  transaction_id: "",
-  sender_number: "",
-  order_notes: "",
-};
-
 export default function CheckoutPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState(initialFormData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedSlug, setSelectedSlug] = useState("premium-oversized-tshirt");
+  const [size, setSize] = useState("L");
+  const [quantity, setQuantity] = useState(1);
+  const [district, setDistrict] = useState("Joypurhat");
+  const [paymentMethod, setPaymentMethod] = useState("bKash");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
-    setFormData((current) => ({ ...current, [name]: value }));
-    if (errorMessage) {
-      setErrorMessage("");
-    }
-  };
+  const product = products.find((item) => item.slug === selectedSlug) || products[0];
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const deliveryCharge =
+    district.trim().toLowerCase() === "joypurhat" ? 100 : 150;
+
+  const subtotal = product.price * quantity;
+  const total = subtotal + deliveryCharge;
+
+  const orderDetails = useMemo(() => {
+    return `${product.name} | Category: ${product.category} | Size: ${size} | Quantity: ${quantity} | Fabric: ${product.fabric} | GSM: ${product.gsm}`;
+  }, [product, size, quantity]);
+
+  async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setLoading(true);
+    setError("");
 
     const form = event.currentTarget;
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
+    const formData = new FormData(form);
 
-    setIsSubmitting(true);
-    setErrorMessage("");
+    const payload = {
+      _subject: "New Dadur Bari Order",
+      full_name: formData.get("full_name"),
+      phone: formData.get("phone"),
+      email: formData.get("email"),
+      district,
+      area: formData.get("area"),
+      address: formData.get("address"),
+      payment_method: paymentMethod,
+      transaction_id: formData.get("transaction_id"),
+      sender_number: formData.get("sender_number"),
+      order_notes: formData.get("order_notes"),
+      order_items: orderDetails,
+      order_product: product.name,
+      order_category: product.category,
+      order_size: size,
+      order_quantity: quantity,
+      order_unit_price: `${product.price} BDT`,
+      delivery_charge: `${deliveryCharge} BDT`,
+      order_total: `${total} BDT`
+    };
 
     try {
-      const response = await fetch("https://formspree.io/f/mqerqlyw", {
+      const res = await fetch("https://formspree.io/f/mqerqlyw", {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          ...formData,
-          _subject: "New Dadur Bari Order",
-          order_items: "Premium Oversized T-Shirt + Gold Custom DTF T-Shirt",
-          order_total: "1498 BDT",
-        }),
+        body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        router.push("/checkout/success");
-        return;
+      if (!res.ok) {
+        throw new Error("Order submit failed. Please try again.");
       }
 
-      let message = "We couldn't submit your order right now. Please try again.";
-      try {
-        const errorData = await response.json();
-        if (errorData?.error) {
-          message = errorData.error;
-        }
-      } catch {
-        // Ignore JSON parsing errors and fall back to the standard message.
-      }
-
-      setErrorMessage(message);
-    } catch {
-      setErrorMessage("We couldn't submit your order right now. Please try again.");
+      window.location.href = "/checkout/success";
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Order submit failed.");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
-      <Header />
+      <header className="border-b border-black/10 bg-white">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <Link href="/" className="text-2xl font-bold">
+            Dadur Bari
+          </Link>
+
+          <nav className="flex gap-6 text-sm font-medium">
+            <Link href="/" className="hover:text-[#C8A45D]">Home</Link>
+            <Link href="/shop" className="hover:text-[#C8A45D]">Shop</Link>
+            <Link href="/cart" className="hover:text-[#C8A45D]">Cart</Link>
+          </nav>
+        </div>
+      </header>
 
       <section className="bg-[#111111] py-16 text-white">
         <div className="mx-auto max-w-7xl px-6">
           <h1 className="text-5xl font-extrabold">Checkout</h1>
           <p className="mt-4 text-white/70">
-            Complete your Dadur Bari order securely.
+            Review your order details before placing order.
           </p>
         </div>
       </section>
 
       <form
-        onSubmit={handleSubmit}
-        className="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[1fr_380px]"
+        onSubmit={submitOrder}
+        className="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-[1fr_390px]"
       >
-        <input type="hidden" name="_subject" value="New Dadur Bari Order" />
-        <input
-          type="hidden"
-          name="order_items"
-          value="Premium Oversized T-Shirt + Gold Custom DTF T-Shirt"
-        />
-        <input type="hidden" name="order_total" value="1498 BDT" />
-
         <div className="space-y-6">
+          <div className="rounded-3xl bg-white p-6 shadow-lg">
+            <h2 className="text-2xl font-bold">Select Product</h2>
+
+            <div className="mt-6 grid gap-4">
+              <select
+                value={selectedSlug}
+                onChange={(event) => setSelectedSlug(event.target.value)}
+                className="rounded-md border border-black/10 px-4 py-3"
+              >
+                {products.map((item) => (
+                  <option key={item.slug} value={item.slug}>
+                    {item.name} — ৳{item.price}
+                  </option>
+                ))}
+              </select>
+
+              <div>
+                <p className="mb-3 font-semibold">Select Size</p>
+                <div className="flex flex-wrap gap-3">
+                  {["M", "L", "XL", "XXL"].map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setSize(item)}
+                      className={
+                        size === item
+                          ? "rounded-md bg-[#111111] px-5 py-3 font-semibold text-white"
+                          : "rounded-md border border-black/20 px-5 py-3 font-semibold"
+                      }
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block font-semibold">Quantity</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(event) =>
+                    setQuantity(Math.max(1, Number(event.target.value)))
+                  }
+                  className="w-full rounded-md border border-black/10 px-4 py-3"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-3xl bg-white p-6 shadow-lg">
             <h2 className="text-2xl font-bold">Customer Information</h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <input
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3"
-                placeholder="Full Name"
-                required
-              />
-              <input
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3"
-                placeholder="Phone Number"
-                required
-              />
-              <input
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3 md:col-span-2"
-                placeholder="Email Optional"
-              />
+              <input name="full_name" required className="rounded-md border border-black/10 px-4 py-3" placeholder="Full Name" />
+              <input name="phone" required className="rounded-md border border-black/10 px-4 py-3" placeholder="Phone Number" />
+              <input name="email" type="email" className="rounded-md border border-black/10 px-4 py-3 md:col-span-2" placeholder="Email Optional" />
             </div>
           </div>
 
@@ -156,38 +199,20 @@ export default function CheckoutPage() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
+                value={district}
+                onChange={(event) => setDistrict(event.target.value)}
+                required
                 className="rounded-md border border-black/10 px-4 py-3"
                 placeholder="District"
-                required
               />
-              <input
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3"
-                placeholder="Area"
-                required
-              />
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="min-h-28 rounded-md border border-black/10 px-4 py-3 md:col-span-2"
-                placeholder="Full Address"
-                required
-              />
+              <input name="area" required className="rounded-md border border-black/10 px-4 py-3" placeholder="Area" />
+              <textarea name="address" required className="min-h-28 rounded-md border border-black/10 px-4 py-3 md:col-span-2" placeholder="Full Address" />
             </div>
 
             <div className="mt-5 rounded-2xl bg-[#F3EFE6] p-4 text-sm leading-7">
-              <p>{`Inside Joypurhat Delivery Charge: ৳${deliveryRules.insideJoypurhat.charge}`}</p>
-              <p>{`Outside Joypurhat Delivery Charge: ৳${deliveryRules.outsideJoypurhat.charge}`}</p>
-              <p>{`Delivery Time: ${deliveryRules.insideJoypurhat.days} / ${deliveryRules.outsideJoypurhat.days}`}</p>
-              <p className="font-semibold text-[#111111]">
-                {deliveryRules.codAdvanceMessage}
-              </p>
+              <p>Inside Joypurhat: ৳100, 1–2 days</p>
+              <p>Outside Joypurhat: ৳150, 2–4 days</p>
+              <p>Current delivery charge: ৳{deliveryCharge}</p>
             </div>
           </div>
 
@@ -195,82 +220,77 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold">Payment Method</h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {paymentMethods.map((method) => {
-                const isSelected = formData.payment_method === method;
-
-                return (
-                  <label
-                    key={method}
-                    className={`cursor-pointer rounded-2xl border p-4 transition ${
-                      isSelected
-                        ? "border-[#C8A45D] bg-[#F3EFE6] shadow-sm"
-                        : "border-black/10 bg-white"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value={method}
-                      checked={isSelected}
-                      onChange={handleChange}
-                      className="mr-2"
-                      required
-                    />
-                    <span className="font-bold">{method}</span>
-                  </label>
-                );
-              })}
+              {["bKash", "Nagad", "Rocket", "Cash On Delivery"].map((method) => (
+                <label
+                  key={method}
+                  className={
+                    paymentMethod === method
+                      ? "rounded-2xl border-2 border-[#C8A45D] bg-[#F3EFE6] p-4"
+                      : "rounded-2xl border border-black/10 p-4"
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="payment_method"
+                    value={method}
+                    checked={paymentMethod === method}
+                    onChange={() => setPaymentMethod(method)}
+                    className="mr-2"
+                  />
+                  <span className="font-bold">{method}</span>
+                </label>
+              ))}
             </div>
 
             <div className="mt-5 rounded-2xl bg-[#F3EFE6] p-4 text-sm leading-7">
-              <p>
-                Payment Number: <strong>{paymentNumber}</strong>
-              </p>
-              <p className="font-semibold text-[#111111]">
-                {deliveryRules.codAdvanceMessage}
-              </p>
+              <p>Payment Number: <strong>01746-212501</strong></p>
+              <p>COD available only if delivery charge is paid in advance.</p>
             </div>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <input
-                name="transaction_id"
-                value={formData.transaction_id}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3"
-                placeholder="Transaction ID"
-              />
-              <input
-                name="sender_number"
-                value={formData.sender_number}
-                onChange={handleChange}
-                className="rounded-md border border-black/10 px-4 py-3"
-                placeholder="Sender Number Optional"
-              />
+              <input name="transaction_id" className="rounded-md border border-black/10 px-4 py-3" placeholder="Transaction ID" />
+              <input name="sender_number" className="rounded-md border border-black/10 px-4 py-3" placeholder="Sender Number Optional" />
             </div>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-lg">
             <h2 className="text-2xl font-bold">Order Notes</h2>
-            <textarea
-              name="order_notes"
-              value={formData.order_notes}
-              onChange={handleChange}
-              className="mt-5 min-h-24 w-full rounded-md border border-black/10 px-4 py-3"
-              placeholder="Any special instruction?"
-            />
+            <textarea name="order_notes" className="mt-5 min-h-24 w-full rounded-md border border-black/10 px-4 py-3" placeholder="Any special instruction?" />
           </div>
+
+          {error ? (
+            <div className="rounded-md bg-red-50 p-4 text-red-700">
+              {error}
+            </div>
+          ) : null}
         </div>
 
-        <aside className="rounded-3xl bg-white p-6 shadow-lg">
+        <aside className="h-fit rounded-3xl bg-white p-6 shadow-lg">
           <h2 className="text-2xl font-bold">Order Summary</h2>
 
           <div className="mt-6 space-y-4 text-sm">
-            {orderItems.map((item) => (
-              <div key={item.name} className="flex justify-between">
-                <span>{item.name}</span>
-                <span>৳{item.price}</span>
-              </div>
-            ))}
+            <div>
+              <p className="font-bold">{product.name}</p>
+              <p className="mt-1 text-black/60">{product.category} Collection</p>
+              <p className="text-black/60">Size: {size}</p>
+              <p className="text-black/60">Fabric: {product.fabric}</p>
+              <p className="text-black/60">GSM: {product.gsm}</p>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Unit Price</span>
+              <span>৳{product.price}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Quantity</span>
+              <span>{quantity}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>৳{subtotal}</span>
+            </div>
 
             <div className="flex justify-between">
               <span>Delivery Charge</span>
@@ -285,28 +305,19 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {errorMessage ? (
-            <p className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-              {errorMessage}
-            </p>
-          ) : null}
-
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="mt-6 w-full rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white transition hover:bg-[#C8A45D] hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={loading}
+            className="mt-6 w-full rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111] disabled:opacity-60"
           >
-            {isSubmitting ? "Placing Order..." : "Place Order"}
+            {loading ? "Placing Order..." : "Place Order"}
           </button>
 
           <p className="mt-4 text-xs leading-6 text-black/50">
-            By placing this order, you confirm that your information is correct.
-            Payment will be manually verified by Dadur Bari.
+            Please review product, size, quantity, delivery and payment before placing order.
           </p>
         </aside>
       </form>
-
-      <Footer />
     </main>
   );
 }
