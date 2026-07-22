@@ -74,3 +74,17 @@ export async function getMvpOrders() {
   await sql.end();
   return rows;
 }
+
+export async function updateMvpOrder(id: string, status: string, paymentStatus: string) {
+  const sql = getSql();
+  await ensureOrdersTable();
+  const [order] = await sql`
+    update mvp_orders
+    set status = ${status},
+        payment_status = ${paymentStatus}
+    where id = ${id}
+    returning *
+  `;
+  await sql.end();
+  return order;
+}

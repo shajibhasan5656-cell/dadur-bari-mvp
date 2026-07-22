@@ -1,17 +1,23 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
 
-export default function Page() {
+export default function SeoPage() {
   return (
-    <AdminShell title="SEO Manager" description="Manage meta titles, descriptions, sitemap and schema.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="SEO Manager" description="SEO checklist and metadata foundation for Dadur Bari.">
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <h2 className="text-xl font-bold">Homepage SEO</h2>
+          <p className="mt-3">Dadur Bari | Premium Custom Apparel in Bangladesh</p>
+        </div>
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <h2 className="text-xl font-bold">Required SEO</h2>
+          <ul className="mt-3 list-inside list-disc text-black/70">
+            <li>Meta title</li>
+            <li>Meta description</li>
+            <li>Open Graph</li>
+            <li>Product schema</li>
+            <li>Sitemap</li>
+          </ul>
+        </div>
       </div>
     </AdminShell>
   );

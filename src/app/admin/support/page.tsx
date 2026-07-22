@@ -1,17 +1,12 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
 
-export default function Page() {
+export default function SupportPage() {
   return (
-    <AdminShell title="Support Tickets" description="Manage customer support tickets and replies.">
+    <AdminShell title="Support Tickets" description="Customer support management foundation.">
       <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+        <p>No support tickets yet. Customers can currently contact by phone or email.</p>
+        <p className="mt-2">Phone: 01746-212501</p>
+        <p>Email: dadur.bari.cloths@gmail.com</p>
       </div>
     </AdminShell>
   );

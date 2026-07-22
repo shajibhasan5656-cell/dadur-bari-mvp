@@ -1,17 +1,10 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
 
-export default function Page() {
+export default function ReviewsPage() {
   return (
-    <AdminShell title="Reviews" description="Moderate verified buyer reviews.">
+    <AdminShell title="Reviews" description="Verified buyer review moderation foundation.">
       <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+        <p>No reviews yet. After customer review feature is enabled, pending reviews will appear here.</p>
       </div>
     </AdminShell>
   );
