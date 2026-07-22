@@ -1,15 +1,18 @@
+import AdminShell from "@/components/admin/AdminShell";
 import Link from "next/link";
 
-export default function AdminSettingsPage() {
+export default function Page() {
   return (
-    <main className="min-h-screen bg-[#F3EFE6] p-8 text-[#111111]">
-      <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-lg">
-        <Link href="/admin" className="text-sm font-semibold text-[#C8A45D]">← Back to Admin</Link>
-        <h1 className="mt-6 text-4xl font-bold">Settings</h1>
-        <p className="mt-4 text-black/60">
-          This Settings module is part of the final Dadur Bari SRS admin system.
+    <AdminShell title="Settings" description="Manage business, payment, delivery and site settings.">
+      <div className="rounded-2xl bg-[#F3EFE6] p-6">
+        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
+        <p className="mt-3 text-black/60">
+          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
         </p>
+        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
+          Back to Dashboard
+        </Link>
       </div>
-    </main>
+    </AdminShell>
   );
 }

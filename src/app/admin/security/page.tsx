@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Page() {
   return (
-    <AdminShell title="SEO Manager" description="Manage meta titles, descriptions, sitemap and schema.">
+    <AdminShell title="Security Dashboard" description="Monitor login attempts, sessions and suspicious activity.">
       <div className="rounded-2xl bg-[#F3EFE6] p-6">
         <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
         <p className="mt-3 text-black/60">
