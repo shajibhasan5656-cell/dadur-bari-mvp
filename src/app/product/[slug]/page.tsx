@@ -76,7 +76,7 @@ export default async function ProductPage({
           <SizeSelector />
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <Link href="/cart" className="rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]">
+            <Link href={`/cart?product=${product.slug}&name=${encodeURIComponent(product.name)}&price=${product.price ?? 0}&category=${encodeURIComponent(product.categoryName ?? "Dadur Bari")}&size=L`} className="rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]">
               Add to Cart
             </Link>
             <Link href="/checkout" className="rounded-md border border-[#111111] px-6 py-4 text-center font-semibold hover:bg-[#111111] hover:text-white">
