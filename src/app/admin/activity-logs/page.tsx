@@ -1,17 +1,40 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
+import { listActivityItems } from "@/lib/mvp-admin-data";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+export default async function ActivityLogsPage() {
+  const items = await listActivityItems();
+
   return (
-    <AdminShell title="Activity Logs" description="Track all important admin and system actions.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="Activity Logs" description="Recent admin data changes in MVP system.">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[800px] text-left text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="py-3">Type</th>
+              <th>Name</th>
+              <th>Slug</th>
+              <th>Status</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr><td colSpan={5} className="py-6 text-black/60">No activity yet.</td></tr>
+            ) : (
+              items.map((item: any) => (
+                <tr key={item.id} className="border-b">
+                  <td className="py-3">{item.type}</td>
+                  <td>{item.name}</td>
+                  <td>{item.slug}</td>
+                  <td>{item.status}</td>
+                  <td>{new Date(item.updated_at).toLocaleString()}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </AdminShell>
   );
