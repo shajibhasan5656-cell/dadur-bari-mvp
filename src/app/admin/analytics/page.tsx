@@ -1,17 +1,38 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
+import { getMvpOrders } from "@/lib/mvp-orders";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+function money(value: string) {
+  return Number(String(value || "0").replace(/[^0-9]/g, "")) || 0;
+}
+
+export default async function AnalyticsPage() {
+  const orders = await getMvpOrders();
+  const totalRevenue = orders.reduce((sum: number, o: any) => sum + money(o.order_total), 0);
+  const totalOrders = orders.length;
+  const avgOrder = totalOrders ? Math.round(totalRevenue / totalOrders) : 0;
+  const codOrders = orders.filter((o: any) => o.payment_method === "Cash On Delivery").length;
+
   return (
-    <AdminShell title="Analytics" description="View sales, product, customer and revenue analytics.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="Analytics" description="MVP business analytics from real checkout orders.">
+      <div className="grid gap-5 md:grid-cols-4">
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <p className="text-sm font-bold tracking-[0.2em]">ORDERS</p>
+          <p className="mt-4 text-4xl font-bold">{totalOrders}</p>
+        </div>
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <p className="text-sm font-bold tracking-[0.2em]">REVENUE</p>
+          <p className="mt-4 text-4xl font-bold">৳{totalRevenue}</p>
+        </div>
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <p className="text-sm font-bold tracking-[0.2em]">AVG ORDER</p>
+          <p className="mt-4 text-4xl font-bold">৳{avgOrder}</p>
+        </div>
+        <div className="rounded-2xl bg-[#F3EFE6] p-6">
+          <p className="text-sm font-bold tracking-[0.2em]">COD</p>
+          <p className="mt-4 text-4xl font-bold">{codOrders}</p>
+        </div>
       </div>
     </AdminShell>
   );

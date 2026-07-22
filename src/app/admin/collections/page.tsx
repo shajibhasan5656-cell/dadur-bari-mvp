@@ -1,17 +1,17 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
 
-export default function Page() {
+const collections = ["Oversized", "Anime", "Minimal", "Typography", "Custom Design", "Limited Edition"];
+
+export default function CollectionsPage() {
   return (
-    <AdminShell title="Collections" description="Manage Oversized, Anime, Minimal and future collections.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="Collections" description="Dadur Bari collection structure.">
+      <div className="grid gap-5 md:grid-cols-3">
+        {collections.map((name) => (
+          <div key={name} className="rounded-2xl bg-[#F3EFE6] p-6">
+            <h2 className="text-2xl font-bold">{name}</h2>
+            <p className="mt-3 text-black/60">Collection ready for products.</p>
+          </div>
+        ))}
       </div>
     </AdminShell>
   );

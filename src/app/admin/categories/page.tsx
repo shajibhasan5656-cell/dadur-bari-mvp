@@ -1,17 +1,21 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
 
-export default function Page() {
+const categories = [
+  ["Silver", "Entry level premium"],
+  ["Gold", "Most popular"],
+  ["Premium", "Luxury experience"],
+];
+
+export default function CategoriesPage() {
   return (
-    <AdminShell title="Categories" description="Manage Silver, Gold, Premium and future categories.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="Categories" description="Dadur Bari product quality categories.">
+      <div className="grid gap-5 md:grid-cols-3">
+        {categories.map(([name, desc]) => (
+          <div key={name} className="rounded-2xl bg-[#F3EFE6] p-6">
+            <h2 className="text-2xl font-bold">{name}</h2>
+            <p className="mt-3 text-black/60">{desc}</p>
+          </div>
+        ))}
       </div>
     </AdminShell>
   );

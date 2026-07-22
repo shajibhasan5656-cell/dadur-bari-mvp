@@ -1,17 +1,40 @@
 import AdminShell from "@/components/admin/AdminShell";
-import Link from "next/link";
+import { getPublishedProducts } from "@/lib/products-db";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+export default async function InventoryPage() {
+  const products = await getPublishedProducts();
+
   return (
-    <AdminShell title="Inventory" description="Track stock, low stock and out of stock products.">
-      <div className="rounded-2xl bg-[#F3EFE6] p-6">
-        <p className="font-semibold">This module is available in the final SRS admin panel foundation.</p>
-        <p className="mt-3 text-black/60">
-          Full database actions will be expanded step by step without changing Dadur Bari brand identity.
-        </p>
-        <Link href="/admin" className="mt-6 inline-block rounded-xl bg-[#111111] px-5 py-3 text-white">
-          Back to Dashboard
-        </Link>
+    <AdminShell title="Inventory" description="Product stock and availability overview.">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px] text-left text-sm">
+          <thead>
+            <tr className="border-b">
+              <th className="py-3">Product</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Pre Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.length === 0 ? (
+              <tr><td colSpan={5} className="py-6 text-black/60">No products found.</td></tr>
+            ) : (
+              products.map((p) => (
+                <tr key={p.id} className="border-b">
+                  <td className="py-3 font-semibold">{p.name}</td>
+                  <td>{p.status}</td>
+                  <td>৳{p.price}</td>
+                  <td>{p.stock}</td>
+                  <td>{p.isPreOrder ? "Yes" : "No"}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </AdminShell>
   );
