@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getProductBySlug } from "@/lib/products-db";
+import SizeSelector from "@/components/product/SizeSelector";
 
 export const dynamic = "force-dynamic";
 
@@ -72,16 +73,7 @@ export default async function ProductPage({
             <Info label="Print Type" value="DTF Printing" />
           </div>
 
-          <div className="mt-8">
-            <p className="mb-3 font-semibold">Select Size</p>
-            <div className="flex flex-wrap gap-3">
-              {["M", "L", "XL", "XXL"].map((size) => (
-                <button key={size} className="rounded-md border border-black/20 px-5 py-3 font-semibold hover:bg-[#111111] hover:text-white">
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SizeSelector />
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <Link href="/cart" className="rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]">
