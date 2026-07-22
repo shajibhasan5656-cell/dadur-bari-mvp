@@ -82,6 +82,18 @@ export default function CheckoutPage() {
     };
 
     try {
+      const dbRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!dbRes.ok) {
+        throw new Error("Order database save failed. Please try again.");
+      }
+
       const res = await fetch("https://formspree.io/f/mqerqlyw", {
         method: "POST",
         headers: {
