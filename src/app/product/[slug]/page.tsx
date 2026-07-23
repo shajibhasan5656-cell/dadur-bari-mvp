@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getProductBySlug } from "@/lib/products-db";
 import { makeCartUrl } from "@/lib/cart-url";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 import SizeSelector from "@/components/product/SizeSelector";
 
 export const dynamic = "force-dynamic";
@@ -29,14 +30,6 @@ export default async function ProductPage({
     );
   }
 
-  const cartUrl = makeCartUrl({
-    slug: product.slug,
-    name: product.name,
-    price: product.price ?? 0,
-    category: product.categoryName ?? "Dadur Bari",
-    size: "L",
-  });
-
   return (
     <main className="min-h-screen bg-[#F3EFE6] text-[#111111]">
       <header className="border-b border-black/10 bg-white">
@@ -45,49 +38,7 @@ export default async function ProductPage({
           <nav className="flex gap-6 text-sm font-medium">
             <Link href="/">Home</Link>
             <Link href="/shop">Shop</Link>
-            <Link href={cartUrl}>Cart</Link>
-          </nav>
-        </div>
-      </header>
-
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-2">
-        <div className="rounded-3xl bg-white p-6 shadow-lg">
-          <div className="flex aspect-square items-center justify-center rounded-2xl bg-[#F3EFE6] p-10 text-center">
-            <div>
-              <p className="text-4xl font-bold">Dadur Bari</p>
-              <p className="mt-3 text-xl">{product.name}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-lg">
-          <span className="rounded-full bg-[#C8A45D] px-4 py-2 text-sm font-semibold">
-            {product.isPreOrder ? "Pre Order" : product.status}
-          </span>
-
-          <h1 className="mt-6 text-5xl font-extrabold leading-tight">{product.name}</h1>
-
-          <p className="mt-4 text-lg leading-8 text-black/60">
-            {product.description || "Premium Dadur Bari custom apparel with durable DTF printing."}
-          </p>
-
-          <div className="mt-6 flex items-end gap-4">
-            <p className="text-4xl font-bold">৳{product.price ?? 0}</p>
-          </div>
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <Info label="Category" value={product.categoryName ?? "Dadur Bari"} />
-            <Info label="Fabric" value={product.fabric ?? "Premium Cotton"} />
-            <Info label="GSM" value={product.gsm ?? "Editable"} />
-            <Info label="Print Type" value="DTF Printing" />
-          </div>
-
-          <SizeSelector />
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <Link href={cartUrl} className="rounded-md bg-[#111111] px-6 py-4 text-center font-semibold text-white hover:bg-[#C8A45D] hover:text-[#111111]">
-              Add to Cart
-            </Link>
+            <AddToCartButton product={product} />
             <Link href="/checkout" className="rounded-md border border-[#111111] px-6 py-4 text-center font-semibold hover:bg-[#111111] hover:text-white">
               Buy Now
             </Link>
